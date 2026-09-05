@@ -1,55 +1,40 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SubTrack - Recurring Cost & Subscription Analyzer')</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Laravel Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Alpine.js CDN -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <style>
-        body {
-            background-color: #09090b;
-            color: #f4f4f5;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #09090b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-[#09090b] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white" x-data="{ 
+<html lang="id" class="dark" x-data="{ 
+    darkMode: localStorage.getItem('subtrack_theme') !== 'light',
     modalOpen: false, 
     editModalOpen: false,
+    importModalOpen: false,
+    fileName: '',
     selectedIds: [],
+    subscriptionsMap: {},
+    initSubscriptions(subs) {
+        let map = {};
+        subs.forEach(s => {
+            map[s.id] = s;
+        });
+        this.subscriptionsMap = map;
+    },
     toggleSelectAll(ids) {
         if (this.selectedIds.length === ids.length) {
             this.selectedIds = [];
         } else {
             this.selectedIds = [...ids];
         }
+    },
+    get selectedMonthlySavings() {
+        return this.selectedIds.reduce((sum, id) => {
+            const item = this.subscriptionsMap[id];
+            return sum + (item ? parseFloat(item.normalized_monthly_cost || 0) : 0);
+        }, 0);
+    },
+    get selectedYearlySavings() {
+        return this.selectedIds.reduce((sum, id) => {
+            const item = this.subscriptionsMap[id];
+            return sum + (item ? parseFloat(item.normalized_yearly_cost || 0) : 0);
+        }, 0);
+    },
+    formatRupiah(amount) {
+        return 'Rp ' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     },
     editData: {
         id: '',
@@ -80,7 +65,67 @@
     filterCycle: 'all', 
     filterStatus: 'all',
     searchQuery: ''
-}">
+}" 
+x-init="
+    $watch('darkMode', val => { 
+        localStorage.setItem('subtrack_theme', val ? 'dark' : 'light'); 
+        if (val) { 
+            document.documentElement.classList.add('dark'); 
+        } else { 
+            document.documentElement.classList.remove('dark'); 
+        } 
+    });
+    if (!darkMode) {
+        document.documentElement.classList.remove('dark');
+    }
+"
+:class="darkMode ? 'dark' : ''">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'SubTrack - Recurring Cost & Subscription Analyzer')</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Theme Detection (Anti-FOUC) -->
+    <script>
+        if (localStorage.getItem('subtrack_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <!-- Laravel Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-zinc-100 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
 
     @yield('content')
 

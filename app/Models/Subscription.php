@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\CurrencyConverter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +38,7 @@ class Subscription extends Model
         'normalized_yearly_cost',
         'is_renewing_soon',
         'is_overdue',
+        'formatted_original_price',
     ];
 
     public function category(): BelongsTo
@@ -50,39 +52,58 @@ class Subscription extends Model
     }
 
     /**
-     * Accessor: Normalized monthly cost based on billing cycle.
+     * Accessor: Normalized monthly cost in IDR based on currency and billing cycle.
      */
     protected function normalizedMonthlyCost(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $price = (float) $this->price;
+                $rawPrice = (float) $this->price;
+                $priceInIdr = CurrencyConverter::toIdr($rawPrice, $this->currency ?? 'IDR');
+
                 return match ($this->billing_cycle) {
-                    'monthly' => $price,
-                    'quarterly' => $price / 3,
-                    'yearly' => $price / 12,
-                    default => $price,
+                    'monthly' => $priceInIdr,
+                    'quarterly' => $priceInIdr / 3,
+                    'yearly' => $priceInIdr / 12,
+                    default => $priceInIdr,
                 };
             }
         );
     }
 
     /**
-     * Accessor: Normalized yearly cost based on billing cycle.
+     * Accessor: Normalized yearly cost in IDR based on currency and billing cycle.
      */
     protected function normalizedYearlyCost(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $price = (float) $this->price;
+                $rawPrice = (float) $this->price;
+                $priceInIdr = CurrencyConverter::toIdr($rawPrice, $this->currency ?? 'IDR');
+
                 return match ($this->billing_cycle) {
-                    'monthly' => $price * 12,
-                    'quarterly' => $price * 4,
-                    'yearly' => $price,
-                    default => $price * 12,
+                    'monthly' => $priceInIdr * 12,
+                    'quarterly' => $priceInIdr * 4,
+                    'yearly' => $priceInIdr,
+                    default => $priceInIdr * 12,
                 };
             }
         );
+    }
+
+    /**
+     * Accessor: Formatted original price with currency symbol.
+     */
+    public function getFormattedOriginalPriceAttribute(): string
+    {
+        $currency = strtoupper($this->currency ?? 'IDR');
+        $symbol = CurrencyConverter::getSymbol($currency);
+
+        if ($currency === 'IDR') {
+            return 'Rp ' . number_format($this->price, 0, ',', '.');
+        }
+
+        return $symbol . number_format($this->price, 2, '.', ',');
     }
 
     /**

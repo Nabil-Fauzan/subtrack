@@ -29,6 +29,7 @@ class SubscriptionAnalyzerTest extends TestCase
         $response->assertViewHas('categoryBreakdown');
         $response->assertSee('SubTrack');
         $response->assertSee('GitHub Copilot');
+        $response->assertSee('Pagu:');
     }
 
     public function test_accessors_calculate_normalized_costs_and_status()
@@ -172,5 +173,168 @@ class SubscriptionAnalyzerTest extends TestCase
         foreach ($ids as $id) {
             $this->assertDatabaseMissing('subscriptions', ['id' => $id]);
         }
+    }
+
+    public function test_can_seed_demo_data_via_endpoint()
+    {
+        Subscription::truncate();
+        $this->assertDatabaseCount('subscriptions', 0);
+
+        $response = $this->post(route('demo.seed'));
+
+        $response->assertRedirect(route('subscriptions.index'));
+        $this->assertGreaterThan(0, Subscription::count());
+    }
+
+    public function test_can_export_subscriptions_to_csv()
+    {
+        $response = $this->get(route('subscriptions.export'));
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment; filename="subtrack-subscriptions-', $response->headers->get('Content-Disposition'));
+
+        // Stream and check content headers
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+
+        $this->assertStringContainsString('Nama Layanan', $content);
+        $this->assertStringContainsString('Metode Bayar', $content);
+        $this->assertStringContainsString('GitHub Copilot', $content);
+    }
+
+    public function test_multi_currency_normalization_calculates_correct_idr_cost()
+    {
+        \Illuminate\Support\Facades\Cache::forget('currency_rates_to_idr');
+        \Illuminate\Support\Facades\Http::fake([
+            'https://open.er-api.com/*' => \Illuminate\Support\Facades\Http::response([
+                'result' => 'success',
+                'rates' => [
+                    'IDR' => 16000.0,
+                    'EUR' => 0.8, // 16000 / 0.8 = 20000 IDR
+                    'SGD' => 1.25,
+                    'GBP' => 0.8,
+                ],
+            ], 200),
+        ]);
+
+        $category = Category::first();
+        $paymentMethod = PaymentMethod::first();
+
+        // USD Subscription: $10/month -> 10 * 16,000 = Rp 160,000 / month
+        $usdSub = Subscription::create([
+            'service_name' => 'ChatGPT Plus USD',
+            'category_id' => $category->id,
+            'payment_method_id' => $paymentMethod->id,
+            'price' => 10,
+            'currency' => 'USD',
+            'billing_cycle' => 'monthly',
+            'next_billing_date' => Carbon::today()->addDays(15),
+            'is_active' => true,
+        ]);
+
+        $this->assertEquals(160000, $usdSub->normalized_monthly_cost);
+        $this->assertEquals(1920000, $usdSub->normalized_yearly_cost);
+        $this->assertEquals('$10.00', $usdSub->formatted_original_price);
+
+        // EUR Subscription: €120/year -> 120 * 20,000 = Rp 2,400,000 / year -> Rp 200,000 / month
+        $eurSub = Subscription::create([
+            'service_name' => 'Hetzner Server EUR',
+            'category_id' => $category->id,
+            'payment_method_id' => $paymentMethod->id,
+            'price' => 120,
+            'currency' => 'EUR',
+            'billing_cycle' => 'yearly',
+            'next_billing_date' => Carbon::today()->addDays(30),
+            'is_active' => true,
+        ]);
+
+        $this->assertEquals(200000, $eurSub->normalized_monthly_cost);
+        $this->assertEquals(2400000, $eurSub->normalized_yearly_cost);
+        $this->assertEquals('€120.00', $eurSub->formatted_original_price);
+    }
+
+    public function test_currency_converter_uses_fallback_when_api_fails()
+    {
+        \Illuminate\Support\Facades\Cache::forget('currency_rates_to_idr');
+        \Illuminate\Support\Facades\Http::fake([
+            'https://open.er-api.com/*' => \Illuminate\Support\Facades\Http::response(null, 500),
+        ]);
+
+        $rates = \App\Services\CurrencyConverter::getRates();
+
+        $this->assertEquals(16250.0, $rates['USD']);
+        $this->assertEquals(17600.0, $rates['EUR']);
+        $this->assertEquals(1.0, $rates['IDR']);
+    }
+
+    public function test_can_import_subscriptions_from_csv()
+    {
+        $csvContent = "Nama Layanan,Kategori,Metode Bayar,Nominal,Mata Uang,Siklus Tagihan,Tanggal Tagihan Berikutnya\n";
+        $csvContent .= "Figma Professional,Design,BCA Virtual Account,15,USD,monthly," . Carbon::today()->addDays(7)->format('Y-m-d') . "\n";
+        $csvContent .= "Cursor Pro,Development Tools,Jenius Debit,20,USD,monthly," . Carbon::today()->addDays(14)->format('Y-m-d') . "\n";
+
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('subscriptions.csv', $csvContent);
+
+        $response = $this->post(route('subscriptions.import'), [
+            'csv_file' => $file,
+        ]);
+
+        $response->assertRedirect(route('subscriptions.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('subscriptions', [
+            'service_name' => 'Figma Professional',
+            'price' => 15.00,
+            'currency' => 'USD',
+        ]);
+
+        $this->assertDatabaseHas('subscriptions', [
+            'service_name' => 'Cursor Pro',
+            'price' => 20.00,
+            'currency' => 'USD',
+        ]);
+    }
+
+    public function test_can_import_subscriptions_with_semicolon_delimiter()
+    {
+        $csvContent = "Nama Layanan;Kategori;Metode Bayar;Harga Asli;Mata Uang;Siklus Penagihan;Jatuh Tempo\n";
+        $csvContent .= "Adobe CC;Design Tools;Mandiri CC;120000;IDR;monthly;2026-10-15\n";
+
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('subscriptions_semicolon.csv', $csvContent);
+
+        $response = $this->post(route('subscriptions.import'), [
+            'csv_file' => $file,
+        ]);
+
+        $response->assertRedirect(route('subscriptions.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('subscriptions', [
+            'service_name' => 'Adobe CC',
+            'price' => 120000.00,
+            'currency' => 'IDR',
+        ]);
+    }
+
+    public function test_import_csv_fails_with_invalid_file_type()
+    {
+        $file = \Illuminate\Http\UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+
+        $response = $this->post(route('subscriptions.import'), [
+            'csv_file' => $file,
+        ]);
+
+        $response->assertSessionHasErrors('csv_file');
+    }
+
+    public function test_dashboard_computes_payment_method_breakdown()
+    {
+        $response = $this->get(route('subscriptions.index'));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('paymentBreakdown');
+        $this->assertNotNull($response->viewData('paymentBreakdown'));
     }
 }
