@@ -158,4 +158,19 @@ class SubscriptionAnalyzerTest extends TestCase
         $response->assertStatus(302);
         $this->assertDatabaseMissing('subscriptions', ['id' => $id]);
     }
+
+    public function test_can_bulk_delete_subscriptions()
+    {
+        $subs = Subscription::take(3)->get();
+        $ids = $subs->pluck('id')->toArray();
+
+        $response = $this->delete(route('subscriptions.bulk-destroy'), [
+            'ids' => $ids,
+        ]);
+
+        $response->assertStatus(302);
+        foreach ($ids as $id) {
+            $this->assertDatabaseMissing('subscriptions', ['id' => $id]);
+        }
+    }
 }

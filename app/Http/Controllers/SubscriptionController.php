@@ -143,4 +143,20 @@ class SubscriptionController extends Controller
         return redirect()->back()
             ->with('success', "Langganan '{$serviceName}' berhasil dihapus.");
     }
+
+    /**
+     * Remove multiple subscriptions in bulk from storage.
+     */
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|exists:subscriptions,id',
+        ]);
+
+        $count = Subscription::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->back()
+            ->with('success', "{$count} langganan berhasil dihapus secara massal.");
+    }
 }

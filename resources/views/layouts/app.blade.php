@@ -43,6 +43,14 @@
 <body class="min-h-screen bg-[#09090b] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white" x-data="{ 
     modalOpen: false, 
     editModalOpen: false,
+    selectedIds: [],
+    toggleSelectAll(ids) {
+        if (this.selectedIds.length === ids.length) {
+            this.selectedIds = [];
+        } else {
+            this.selectedIds = [...ids];
+        }
+    },
     editData: {
         id: '',
         service_name: '',
