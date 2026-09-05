@@ -1,6 +1,6 @@
 # SubTrack — Recurring Cost & Subscription Intelligence Dashboard
 
-**Solusi *Local-First SaaS & Subscription Cost Intelligence* untuk Normalisasi Beban Finansial Multi-Siklus dan Multi-Mata Uang Menjadi Proyeksi Arus Kas yang Terukur.**
+**A local-first SaaS and subscription cost intelligence tool designed to normalize multi-cycle and multi-currency expenses into actionable, predictable cash flow projections.**
 
 [![Laravel](https://img.shields.io/badge/Laravel-11%20%7C%2012-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
@@ -13,62 +13,60 @@
 
 ## 📸 Visual Showcase
 
-### 1. 📊 Analitik Pengeluaran & Intelijen Alokasi Kategori
+### 1. Expense Analytics & Category Allocation Intelligence
 
-Dasbor visualisasi metrik utama: total beban bulanan, proyeksi tahunan, utilisasi pagu anggaran (*budget cap*), penghitung tagihan terlewat/segera jatuh tempo, dan bilah distribusi proporsi kategori interaktif.
+Key financial metric visualization: total monthly cost, annualized run rate, budget utilization cap, overdue and upcoming renewal counters, alongside an interactive categorical expense distribution bar.
 
 ![SubTrack Dashboard Overview](docs/screenshots/dashboard-overview.png)
 
-### 2. 💳 Distribusi Pembayaran & Manajemen Data (Tabel, Filter & CSV)
+### 2. Payment Distribution & Data Management (Table, Filters & CSV Pipeline)
 
-Wawasan arus kas berdasarkan instrumen pembayaran (*Cashflow Risk Warning*), filter multi-kriteria instan, batch import/export CSV, seleksi massal, dan pengelolaan data langganan *real-time*.
+Cash flow insights mapped across payment instruments (*Cash Flow Risk Warnings*), instant multi-criteria filtering, batch CSV export/import, bulk selection, and real-time subscription lifecycle management.
 
 ![SubTrack Table Management](docs/screenshots/table-management.png)
 
 ---
 
-## 🌟 Fitur Unggulan (Core Highlights)
+## 🌟 Key Features
 
 - 🔄 **Multi-Cycle Cost Normalization & Multi-Currency Engine:**
-  - Menghitung otomatis ekuivalen biaya bulanan dan proyeksi tahunan dari berbagai siklus (*monthly*, *quarterly*, *yearly*).
-  - Mendukung konversi multi-mata uang (`IDR`, `USD`, `EUR`, `SGD`, `GBP`) dengan integrasi kurs valas real-time API publik serta sistem *cache fallback* 6 jam.
+  - Automatically calculates monthly and yearly normalized equivalents across diverse billing cadences (*monthly*, *quarterly*, *yearly*).
+  - Supports multi-currency conversion (`IDR`, `USD`, `EUR`, `SGD`, `GBP`) with real-time public exchange rate integration and a resilient 6-hour cache fallback mechanism.
 
-- 🛡️ **Cashflow & Payment Insights:**
-  - Pemetaan beban dominan pengeluaran berdasarkan instrumen (*Credit Card, GoPay/E-Wallet, Bank Transfer*).
-  - Mendeteksi risiko arus kas jika suatu metode pembayaran melampaui batas toleransi beban (>40% dari total pengeluaran).
+- 🛡️ **Cash Flow & Payment Insights:**
+  - Evaluates spending dominance across payment channels (*Credit Card, GoPay/E-Wallet, Bank Transfer*).
+  - Flags cash flow risks if any single payment instrument exceeds 40% of total recurring expenses to prevent credit limit exhaustion.
 
 - ⏳ **Renewal Urgency & Lifecycle Alerts:**
-  - Sistem penanda status otomatis:
-    - ⚠️ **Overdue:** Tagihan yang telah melewati tanggal jatuh tempo.
-    - ⏳ **Renewing Soon:** Peringatan perpanjangan mendekati hari-H ($\le 7$ hari).
-  - *Dynamic pulse animation* untuk menarik atensi terhadap tagihan prioritas.
+  - Automated status badges for overdue invoices and upcoming billing deadlines ($\le 7$ days).
+  - Dynamic pulse indicators to draw immediate attention toward urgent renewal actions.
 
 - 🏗️ **Decoupled Architecture & Single Responsibility Principle (SRP):**
-  - **Form Request Layer (`app/Http/Requests/`)**: Validasi terisolasi untuk `StoreSubscriptionRequest`, `UpdateSubscriptionRequest`, `ImportSubscriptionRequest`, dan `BulkDestroySubscriptionRequest`.
+  - **Form Request Layer (`app/Http/Requests/`)**: Isolated validation logic via `StoreSubscriptionRequest`, `UpdateSubscriptionRequest`, `ImportSubscriptionRequest`, and `BulkDestroySubscriptionRequest`.
   - **Service Layer (`app/Services/`)**:
-    - `SubscriptionCostService`: Seluruh kalkulasi agregasi pengeluaran, metrik rasio pagu anggaran, serta distribusi kategori/metode bayar.
-    - `SubscriptionCsvService`: Pipeline pengolahan stream CSV ekspor ber-BOM UTF-8 dan parser impor toleran format dengan transaksi atomik DB.
-    - `CurrencyConverter`: Pengambilan kurs valas eksternal dengan caching dan graceful degradation.
-  - **Dedicated Controller (`app/Http/Controllers/`)**:
-    - `SubscriptionImportExportController`: Khusus menangani stream CSV import/export.
-    - `SubscriptionController`: Sangat ringkas (<100 baris) khusus alur RESTful standar.
+    - `SubscriptionCostService`: Aggregates recurring expenses, budget cap thresholds, category distribution, and payment breakdown analytics.
+    - `SubscriptionCsvService`: High-performance UTF-8 BOM streaming export and robust format-tolerant batch import encapsulated in atomic database transactions.
+    - `CurrencyConverter`: Resilient external forex rate fetching with caching and graceful degradation defaults.
+  - **Dedicated Controllers (`app/Http/Controllers/`)**:
+    - `SubscriptionImportExportController`: Isolated controller handling CSV streaming download and batch upload pipelines.
+    - `SubscriptionController`: Extremely lean resource controller (<100 lines) dedicated strictly to standard RESTful actions.
 
 - 📥 **Enterprise-Grade CSV Import & Export:**
-  - **Export:** Menggunakan `StreamedResponse` hemat memori dengan *UTF-8 Byte Order Mark (BOM)* agar kompatibel sempurna saat dibuka di Microsoft Excel.
-  - **Import:** Pendeteksi otomatis pemisah (*delimiter auto-detection* `,`, `;`, `\t`), pembersihan berbagai format angka desimal/ribuan, serta dibungkus dalam `DB::transaction`.
+  - **Export:** Memory-efficient `StreamedResponse` formatted with UTF-8 Byte Order Mark (BOM) for native, flawless compatibility in Microsoft Excel and spreadsheet tools.
+  - **Import:** Automated delimiter detection (`,`, `;`, `\t`), multi-format numeric sanitization, and atomic transactional rollback on invalid records.
 
 - ♿ **A11y, SEO & Performance Compliant:**
-  - Desain gelap berstandar kontras warna **WCAG AA** ($\ge 4.5:1$).
-  - Optimasi penuh *Screen Reader* dan *AI Agentic Browsing Accessibility Tree* (`aria-label`, semantic labels, keyboard navigation).
-  - Skor Audit Google Lighthouse: **Accessibility 100**, **Best Practices 100**, **SEO 100**.
+  - Fully compliant with **WCAG AA** ($\ge 4.5:1$) high-contrast standards across dark and light modes.
+  - Optimized Accessibility Tree for Screen Readers and AI Agentic Browsers (`aria-label`, explicit form controls, semantic markup).
+  - Perfect Google Lighthouse audit scores: **Accessibility 100**, **Best Practices 100**, **SEO 100**.
 
 ---
 
-## 🏛️ Arsitektur Sistem
+## 🏛️ System Architecture
 
 ```mermaid
 graph TD
-    User([Pengguna / Klien]) -->|HTTP Request| Router[routes/web.php]
+    User([Client / Web Browser]) -->|HTTP Request| Router[routes/web.php]
     
     subgraph Controller Layer
         Router -->|RESTful CRUD| SubCtrl[SubscriptionController]
@@ -86,7 +84,7 @@ graph TD
         SubCtrl -->|Dependency Injection| CostService[SubscriptionCostService]
         CsvCtrl -->|Dependency Injection| CsvService[SubscriptionCsvService]
         CostService -->|Model Query & Accessors| SubModel[Subscription Model]
-        SubModel -->|Live Forex / Cache| CurrService[CurrencyConverter]
+        SubModel -->|Live Forex & Cache| CurrService[CurrencyConverter]
         CsvService -->|Atomic Transaction| SubModel
     end
 
@@ -94,7 +92,7 @@ graph TD
         SubModel --> DB[(MySQL / SQLite Database)]
     end
     
-    SubCtrl -->|View Response + Analytics Data| BladeView[Tailwind & Alpine.js Blade View]
+    SubCtrl -->|View Response & Analytics Payload| BladeView[Tailwind & Alpine.js Blade View]
     CsvCtrl -->|Streamed Response| CSVDownload[subtrack-subscriptions.csv]
 ```
 
@@ -102,66 +100,66 @@ graph TD
 
 ## 🛠️ Tech Stack
 
-| Layer | Teknologi | Keterangan |
+| Layer | Technology | Description |
 | :--- | :--- | :--- |
-| **Backend Framework** | Laravel 11 / 12 | Arsitektur MVC modern, Eloquent ORM, Database Transactions |
+| **Backend Framework** | Laravel 11 / 12 | Modern MVC architecture, Eloquent ORM, Database Transactions |
 | **Language** | PHP 8.2+ | Strict typing, Constructor property promotion, Match expressions |
-| **Frontend Styling** | Tailwind CSS 3.4+ | Dark/Light theme, Glassmorphism, Micro-interactions, WCAG AA |
-| **Interactivity** | Alpine.js 3.x | Reactive client-side search, filtering, modal state, multi-select |
+| **Frontend Styling** | Tailwind CSS 3.4+ | Dark/Light theme, Glassmorphism, Micro-interactions, WCAG AA compliant |
+| **Interactivity** | Alpine.js 3.x | Reactive client-side search, filtering, modal state, bulk actions |
 | **Testing Engine** | PHPUnit | 17 Feature & Unit Tests (65 Assertions) |
-| **Exchange Rate API** | Open Exchange Rates API | Auto-cached 6 hours with fallback default rates |
+| **Exchange Rate API** | Open Exchange Rates API | Auto-cached for 6 hours with offline default fallback rates |
 
 ---
 
-## 🚀 Panduan Memulai (Quick Start)
+## 🚀 Getting Started
 
-### 1. Prasyarat Sistem
+### 1. Prerequisites
 
-- PHP `>= 8.2` (Ekstensi: `pdo`, `mbstring`, `openssl`, `curl`, `fileinfo`)
+- PHP `>= 8.2` (Extensions: `pdo`, `mbstring`, `openssl`, `curl`, `fileinfo`)
 - Composer
 - Node.js & NPM
 - MySQL / MariaDB / SQLite
 
-### 2. Instalasi & Setup
+### 2. Installation & Setup
 
 ```bash
-# 1. Klon repositori
+# 1. Clone repository
 git clone https://github.com/Nabil-Fauzan/subtrack.git
 cd subtrack
 
-# 2. Pasang dependensi PHP & Node.js
+# 2. Install PHP and Node.js dependencies
 composer install
 npm install
 
-# 3. Konfigurasi Environment
+# 3. Configure environment
 cp .env.example .env
 php artisan key:generate
 
-# 4. Sesuaikan konfigurasi koneksi DB pada file .env, lalu jalankan migrasi & seeder
+# 4. Configure database credentials in .env, then run migrations and seeders
 php artisan migrate --seed
 
-# 5. Kompilasi aset frontend
+# 5. Compile frontend assets
 npm run build
 
-# 6. Jalankan server lokal
+# 6. Start local development server
 php artisan serve
 ```
 
-Aplikasi sekarang dapat diakses melalui peramban di: `http://127.0.0.1:8000`.
+The application will be accessible in your web browser at: `http://127.0.0.1:8000`.
 
 ---
 
-## 🧪 Pengujian & Jaminan Kualitas
+## 🧪 Testing & Quality Assurance
 
-Aplikasi dilengkapi dengan rangkaian pengujian otomatis (*Automated Feature & Unit Testing*) untuk menjamin tidak adanya regresi pada logika analitik kalkulasi, validasi form request, alur impor/ekspor CSV, maupun manipulasi status langganan.
+SubTrack is backed by a comprehensive automated feature and unit test suite ensuring zero regression across financial calculations, request validation, CSV pipelines, and lifecycle mutations.
 
-Jalankan pengujian menggunakan PHPUnit:
+Execute the test suite using PHPUnit:
 
 ```bash
 php artisan test
 ```
 
-### Hasil Uji Rangkaian
+### Automated Test Results
 
 ```text
 PASS  Tests\Feature\SubscriptionControllerTest
@@ -189,10 +187,10 @@ Duration: 0.85s
 
 ---
 
-## 📄 Lisensi
+## 📄 License
 
-Proyek ini dilisensikan di bawah lisensi [MIT License](LICENSE).
+This project is open-sourced software licensed under the [MIT License](LICENSE).
 
 ---
 
-*Dikembangkan untuk manajemen biaya berulang dan pemantauan langganan yang transparan dan cerdas.*
+*Crafted for transparent, intelligent, and proactive subscription cost management.*
