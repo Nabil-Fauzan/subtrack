@@ -42,8 +42,34 @@
 </head>
 <body class="min-h-screen bg-[#09090b] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white" x-data="{ 
     modalOpen: false, 
+    editModalOpen: false,
+    editData: {
+        id: '',
+        service_name: '',
+        category_id: '',
+        payment_method_id: '',
+        price: '',
+        currency: 'IDR',
+        billing_cycle: 'monthly',
+        next_billing_date: '',
+        is_active: true
+    },
+    openEditModal(sub) {
+        this.editData = {
+            id: sub.id,
+            service_name: sub.service_name,
+            category_id: sub.category_id,
+            payment_method_id: sub.payment_method_id,
+            price: sub.price,
+            currency: sub.currency || 'IDR',
+            billing_cycle: sub.billing_cycle,
+            next_billing_date: sub.next_billing_date ? sub.next_billing_date.substring(0, 10) : '',
+            is_active: !!sub.is_active
+        };
+        this.editModalOpen = true;
+    },
     filterCategory: 'all', 
-    filterCycle: 'all',
+    filterCycle: 'all', 
     filterStatus: 'all',
     searchQuery: ''
 }">

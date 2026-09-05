@@ -89,35 +89,58 @@ class SubscriptionController extends Controller
 
         $subscription = Subscription::create($validated);
 
-        return redirect()->route('subscriptions.index')
+        return redirect()->back()
             ->with('success', "Langganan '{$subscription->service_name}' berhasil ditambahkan.");
+    }
+
+    /**
+     * Update the specified subscription in storage.
+     */
+    public function update(Request $request, Subscription $subscription): RedirectResponse
+    {
+        $validated = $request->validate([
+            'service_name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'price' => 'required|numeric|min:0',
+            'currency' => 'nullable|string|max:10',
+            'billing_cycle' => 'required|in:monthly,quarterly,yearly',
+            'next_billing_date' => 'required|date',
+            'is_active' => 'nullable',
+        ]);
+
+        $validated['currency'] = $validated['currency'] ?? 'IDR';
+        $validated['is_active'] = $request->boolean('is_active', false);
+
+        $subscription->update($validated);
+
+        return redirect()->back()
+            ->with('success', "Langganan '{$subscription->service_name}' berhasil diperbarui.");
     }
 
     /**
      * Toggle the active status of the subscription.
      */
-    public function toggleStatus(int $id): RedirectResponse
+    public function toggleStatus(Subscription $subscription): RedirectResponse
     {
-        $subscription = Subscription::findOrFail($id);
         $subscription->is_active = !$subscription->is_active;
         $subscription->save();
 
         $statusText = $subscription->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
-        return redirect()->route('subscriptions.index')
+        return redirect()->back()
             ->with('success', "Status langganan '{$subscription->service_name}' berhasil {$statusText}.");
     }
 
     /**
      * Remove the specified subscription from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Subscription $subscription): RedirectResponse
     {
-        $subscription = Subscription::findOrFail($id);
         $serviceName = $subscription->service_name;
         $subscription->delete();
 
-        return redirect()->route('subscriptions.index')
+        return redirect()->back()
             ->with('success', "Langganan '{$serviceName}' berhasil dihapus.");
     }
 }

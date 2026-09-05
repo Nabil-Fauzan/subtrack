@@ -58,4 +58,7 @@
 
     <!-- Add Subscription Modal -->
     @include('partials.modal-create')
+
+    <!-- Edit Subscription Modal -->
+    @include('partials.modal-edit')
 @endsection

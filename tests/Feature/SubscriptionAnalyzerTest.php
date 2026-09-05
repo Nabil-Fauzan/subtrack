@@ -101,10 +101,36 @@ class SubscriptionAnalyzerTest extends TestCase
 
         $response = $this->post(route('subscriptions.store'), $payload);
 
-        $response->assertRedirect(route('subscriptions.index'));
+        $response->assertStatus(302);
         $this->assertDatabaseHas('subscriptions', [
             'service_name' => 'Canva Pro',
             'price' => 95000.00,
+        ]);
+    }
+
+    public function test_can_update_existing_subscription()
+    {
+        $sub = Subscription::first();
+        $category = Category::latest('id')->first();
+        $paymentMethod = PaymentMethod::latest('id')->first();
+
+        $payload = [
+            'service_name' => 'GitHub Copilot Enterprise',
+            'category_id' => $category->id,
+            'payment_method_id' => $paymentMethod->id,
+            'price' => 300000,
+            'billing_cycle' => 'monthly',
+            'next_billing_date' => Carbon::today()->addDays(25)->toDateString(),
+            'is_active' => '1',
+        ];
+
+        $response = $this->put(route('subscriptions.update', $sub), $payload);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('subscriptions', [
+            'id' => $sub->id,
+            'service_name' => 'GitHub Copilot Enterprise',
+            'price' => 300000.00,
         ]);
     }
 
@@ -113,9 +139,9 @@ class SubscriptionAnalyzerTest extends TestCase
         $sub = Subscription::first();
         $initialStatus = $sub->is_active;
 
-        $response = $this->patch(route('subscriptions.toggle', $sub->id));
+        $response = $this->patch(route('subscriptions.toggle', $sub));
 
-        $response->assertRedirect(route('subscriptions.index'));
+        $response->assertStatus(302);
         $this->assertDatabaseHas('subscriptions', [
             'id' => $sub->id,
             'is_active' => !$initialStatus,
@@ -127,9 +153,9 @@ class SubscriptionAnalyzerTest extends TestCase
         $sub = Subscription::first();
         $id = $sub->id;
 
-        $response = $this->delete(route('subscriptions.destroy', $id));
+        $response = $this->delete(route('subscriptions.destroy', $sub));
 
-        $response->assertRedirect(route('subscriptions.index'));
+        $response->assertStatus(302);
         $this->assertDatabaseMissing('subscriptions', ['id' => $id]);
     }
 }
