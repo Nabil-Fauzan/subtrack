@@ -224,7 +224,7 @@
                                     <div class="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
                                         <span>{{ $sub->service_name }}</span>
                                     </div>
-                                    <span class="text-xs text-zinc-600 dark:text-zinc-400">ID #{{ $sub->id }}</span>
+                                    <span class="text-xs text-zinc-600 dark:text-zinc-300 font-medium">ID #{{ $sub->id }}</span>
                                 </div>
                             </div>
                         </td>
@@ -232,10 +232,10 @@
                         <!-- Category Badge -->
                         <td class="py-4 px-4">
                             <span 
-                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
-                                style="background-color: {{ $sub->category->color_hex }}18; color: {{ $sub->category->color_hex }}; border: 1px solid {{ $sub->category->color_hex }}50;"
+                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-zinc-900 dark:text-zinc-100"
+                                style="background-color: {{ $sub->category->color_hex }}22; border: 1px solid {{ $sub->category->color_hex }}66;"
                             >
-                                <span class="w-1.5 h-1.5 rounded-full mr-1.5" style="background-color: {{ $sub->category->color_hex }};"></span>
+                                <span class="w-1.5 h-1.5 rounded-full mr-1.5 shadow-sm" style="background-color: {{ $sub->category->color_hex }};"></span>
                                 {{ $sub->category->name }}
                             </span>
                         </td>
@@ -243,44 +243,44 @@
                         <!-- Original Price & Currency Badge -->
                         <td class="py-4 px-4">
                             <div class="flex items-center space-x-1.5">
-                                <span class="font-bold text-zinc-900 dark:text-zinc-200">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100">
                                     {{ $sub->formatted_original_price }}
                                 </span>
                                 @if($isForeignCurrency)
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
                                         {{ $sub->currency }}
                                     </span>
                                 @endif
                             </div>
-                            <span class="inline-block text-[11px] font-medium text-zinc-600 dark:text-zinc-400 capitalize">
+                            <span class="inline-block text-[11px] font-medium text-zinc-600 dark:text-zinc-300 capitalize">
                                 / {{ $sub->billing_cycle }}
                             </span>
                         </td>
 
                         <!-- Normalized Monthly Cost (IDR) -->
                         <td class="py-4 px-4">
-                            <div class="text-sm font-semibold text-indigo-600 dark:text-indigo-300">
+                            <div class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
                                 Rp {{ number_format($sub->normalized_monthly_cost, 0, ',', '.') }}
                             </div>
-                            <span class="text-[10px] text-zinc-600 dark:text-zinc-400">per bulan</span>
+                            <span class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">per bulan</span>
                         </td>
 
                         <!-- Next Billing Date & Renewal Status -->
                         <td class="py-4 px-4">
-                            <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            <div class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                                 {{ \Carbon\Carbon::parse($sub->next_billing_date)->format('d M Y') }}
                             </div>
                             <div class="mt-1">
                                 @if($sub->is_overdue)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">
                                         ⚠️ Terlewat (Overdue)
                                     </span>
                                 @elseif($sub->is_renewing_soon)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-500/30 animate-pulse">
                                         ⏳ Perpanjang {{ $daysDiff == 0 ? 'Hari ini' : 'dalam ' . $daysDiff . ' hari' }}
                                     </span>
                                 @else
-                                    <span class="text-[11px] text-zinc-600 dark:text-zinc-400">
+                                    <span class="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium">
                                         {{ $daysDiff }} hari lagi
                                     </span>
                                 @endif
@@ -289,8 +289,8 @@
 
                         <!-- Payment Method -->
                         <td class="py-4 px-4">
-                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-100 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60">
-                                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/60">
+                                <svg class="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                                 <span>{{ $sub->paymentMethod->name }}</span>
@@ -320,8 +320,9 @@
                                 <button 
                                     type="button"
                                     @click="openEditModal({{ json_encode($sub) }})" 
-                                    class="p-2 rounded-xl text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
+                                    class="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
                                     title="Edit Langganan"
+                                    aria-label="Edit langganan {{ $sub->service_name }}"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -334,8 +335,9 @@
                                     @method('DELETE')
                                     <button 
                                         type="submit" 
-                                        class="p-2 rounded-xl text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                                        class="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                                         title="Hapus Langganan"
+                                        aria-label="Hapus langganan {{ $sub->service_name }}"
                                     >
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -381,12 +383,12 @@
     </div>
 
     <!-- Table Footer Stats -->
-    <div class="p-4 border-t border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 gap-2">
+    <div class="p-4 border-t border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-600 dark:text-zinc-300 gap-2">
         <div class="flex items-center space-x-2">
             <span>Menampilkan {{ $subscriptions->count() }} total langganan</span>
             <span class="text-zinc-400 dark:text-zinc-600">&bull;</span>
-            <span class="text-indigo-600 dark:text-indigo-400" x-show="selectedIds.length > 0">(<span x-text="selectedIds.length"></span> dipilih)</span>
+            <span class="text-indigo-600 dark:text-indigo-400 font-semibold" x-show="selectedIds.length > 0">(<span x-text="selectedIds.length"></span> dipilih)</span>
         </div>
-        <span class="text-zinc-400 dark:text-zinc-500">Multi-Currency &bull; Kurs Otomatis IDR</span>
+        <span class="text-zinc-600 dark:text-zinc-300 font-medium">Multi-Currency &bull; Kurs Otomatis IDR</span>
     </div>
 </div>
