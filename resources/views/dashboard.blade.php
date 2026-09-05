@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'SubTrack - Recurring Cost & Subscription Analyzer')
+@section('title', 'SubTrack - Recurring Cost & Subscription Intelligence')
 
 @section('content')
     <!-- Header Navigation -->

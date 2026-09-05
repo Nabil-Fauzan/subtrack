@@ -80,11 +80,13 @@
             <div class="relative min-w-[160px] flex-1 sm:flex-initial">
                 <input 
                     type="text" 
+                    name="search"
                     x-model="searchQuery" 
+                    aria-label="Cari nama layanan"
                     placeholder="Cari layanan..." 
-                    class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 >
-                <svg class="w-4 h-4 text-zinc-400 dark:text-zinc-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
@@ -92,7 +94,8 @@
             <!-- Category Filter -->
             <select 
                 x-model="filterCategory" 
-                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+                aria-label="Filter berdasarkan kategori"
+                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
             >
                 <option value="all">Semua Kategori</option>
                 @foreach($categories as $cat)
@@ -103,7 +106,8 @@
             <!-- Cycle Filter -->
             <select 
                 x-model="filterCycle" 
-                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+                aria-label="Filter berdasarkan siklus penagihan"
+                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
             >
                 <option value="all">Semua Siklus</option>
                 <option value="monthly">Monthly</option>
@@ -114,7 +118,8 @@
             <!-- Status Filter -->
             <select 
                 x-model="filterStatus" 
-                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+                aria-label="Filter berdasarkan status langganan"
+                class="px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
             >
                 <option value="all">Semua Status</option>
                 <option value="active">Hanya Aktif</option>
@@ -153,13 +158,14 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="border-b border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-950/40 text-[11px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
+                <tr class="border-b border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-950/40 text-[11px] uppercase tracking-wider font-semibold text-zinc-600 dark:text-zinc-400">
                     <th class="py-4 pl-6 pr-2 w-10 text-center">
                         <input 
                             type="checkbox" 
                             @change="toggleSelectAll({{ json_encode($subscriptions->pluck('id')) }})" 
                             :checked="selectedIds.length === {{ $subscriptions->count() }} && {{ $subscriptions->count() }} > 0"
                             title="Pilih Semua"
+                            aria-label="Pilih semua langganan"
                             class="w-4 h-4 rounded bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                         >
                     </th>
@@ -200,6 +206,7 @@
                                 type="checkbox" 
                                 :value="{{ $sub->id }}" 
                                 x-model.number="selectedIds"
+                                aria-label="Pilih langganan {{ $sub->service_name }}"
                                 class="w-4 h-4 rounded bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                             >
                         </td>
@@ -217,7 +224,7 @@
                                     <div class="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
                                         <span>{{ $sub->service_name }}</span>
                                     </div>
-                                    <span class="text-xs text-zinc-400 dark:text-zinc-500">ID #{{ $sub->id }}</span>
+                                    <span class="text-xs text-zinc-600 dark:text-zinc-400">ID #{{ $sub->id }}</span>
                                 </div>
                             </div>
                         </td>
@@ -225,8 +232,8 @@
                         <!-- Category Badge -->
                         <td class="py-4 px-4">
                             <span 
-                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                                style="background-color: {{ $sub->category->color_hex }}15; color: {{ $sub->category->color_hex }}; border: 1px solid {{ $sub->category->color_hex }}40;"
+                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                                style="background-color: {{ $sub->category->color_hex }}18; color: {{ $sub->category->color_hex }}; border: 1px solid {{ $sub->category->color_hex }}50;"
                             >
                                 <span class="w-1.5 h-1.5 rounded-full mr-1.5" style="background-color: {{ $sub->category->color_hex }};"></span>
                                 {{ $sub->category->name }}
@@ -245,7 +252,7 @@
                                     </span>
                                 @endif
                             </div>
-                            <span class="inline-block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 capitalize">
+                            <span class="inline-block text-[11px] font-medium text-zinc-600 dark:text-zinc-400 capitalize">
                                 / {{ $sub->billing_cycle }}
                             </span>
                         </td>
@@ -255,7 +262,7 @@
                             <div class="text-sm font-semibold text-indigo-600 dark:text-indigo-300">
                                 Rp {{ number_format($sub->normalized_monthly_cost, 0, ',', '.') }}
                             </div>
-                            <span class="text-[10px] text-zinc-400 dark:text-zinc-500">per bulan</span>
+                            <span class="text-[10px] text-zinc-600 dark:text-zinc-400">per bulan</span>
                         </td>
 
                         <!-- Next Billing Date & Renewal Status -->
@@ -273,7 +280,7 @@
                                         ⏳ Perpanjang {{ $daysDiff == 0 ? 'Hari ini' : 'dalam ' . $daysDiff . ' hari' }}
                                     </span>
                                 @else
-                                    <span class="text-[11px] text-zinc-400 dark:text-zinc-500">
+                                    <span class="text-[11px] text-zinc-600 dark:text-zinc-400">
                                         {{ $daysDiff }} hari lagi
                                     </span>
                                 @endif

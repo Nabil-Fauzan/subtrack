@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+  </defs>
+
+  <!-- Container Base -->
+  <rect width="32" height="32" rx="8" fill="url(#bgGrad)" />
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="7.25" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.25" />
+
+  <!-- Recurring Circular Arrow Loop -->
+  <path d="M7 13.5 A9 9 0 0 1 23 8" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-opacity="0.9" />
+  <polygon points="21.5,4.5 26,8 21.5,11.5" fill="#FFFFFF" />
+
+  <!-- Analytics Growth Bars -->
+  <!-- Bar 1 (Left) -->
+  <rect x="7.5" y="16" width="3.5" height="8" rx="1.5" fill="#FFFFFF" fill-opacity="0.65" />
+  
+  <!-- Bar 2 (Middle) -->
+  <rect x="13.5" y="12" width="3.5" height="12" rx="1.5" fill="#FFFFFF" fill-opacity="0.95" />
+  
+  <!-- Bar 3 (Right - Emerald Active/Highlight) -->
+  <rect x="19.5" y="8" width="3.5" height="16" rx="1.5" fill="url(#barGrad)" />
+
+  <!-- Cycle Dot Indicator -->
+  <circle cx="21.25" cy="8" r="1" fill="#FFFFFF" />
+</svg>

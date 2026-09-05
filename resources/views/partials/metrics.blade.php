@@ -91,10 +91,10 @@
                 <span class="text-2xl lg:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">{{ $metrics['active_count'] }}</span>
                 <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Aktif</span>
                 <span class="text-zinc-400 dark:text-zinc-600">/</span>
-                <span class="text-lg font-bold text-zinc-500 dark:text-zinc-400">{{ $metrics['inactive_count'] }}</span>
-                <span class="text-xs text-zinc-400 dark:text-zinc-500">Nonaktif</span>
+                <span class="text-lg font-bold text-zinc-600 dark:text-zinc-300">{{ $metrics['inactive_count'] }}</span>
+                <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">Nonaktif</span>
             </div>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400">Total {{ $subscriptions->count() }} layanan terdaftar</p>
+            <p class="text-xs text-zinc-600 dark:text-zinc-400">Total {{ $subscriptions->count() }} layanan terdaftar</p>
         </div>
         <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/60">
             <div class="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden flex">

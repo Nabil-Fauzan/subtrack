@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark" x-data="{ 
+<html lang="id" x-data="{ 
     darkMode: localStorage.getItem('subtrack_theme') !== 'light',
     modalOpen: false, 
     editModalOpen: false,
@@ -83,9 +83,14 @@ x-init="
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SubTrack - Platform analitik biaya langganan SaaS dan recurring cost analyzer dengan normalisasi multi-mata uang otomatis, kalkulator penghematan, dan pelacak pagu anggaran.">
+    <meta name="robots" content="index, follow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SubTrack - Recurring Cost & Subscription Analyzer')</title>
+    <title>@yield('title', 'SubTrack - Recurring Cost & Subscription Intelligence')</title>
     
+    <!-- Custom Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

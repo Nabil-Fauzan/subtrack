@@ -36,8 +36,8 @@
                         <p class="text-xs font-semibold text-zinc-900 dark:text-zinc-200 truncate">{{ $cat['name'] }}</p>
                         <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 ml-1">{{ $cat['percentage'] }}%</span>
                     </div>
-                    <p class="text-xs font-medium text-zinc-600 dark:text-zinc-400 mt-0.5">Rp {{ number_format($cat['monthly_cost'], 0, ',', '.') }}</p>
-                    <p class="text-[10px] text-zinc-400 dark:text-zinc-500">{{ $cat['active_count'] }} aktif</p>
+                    <p class="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5">Rp {{ number_format($cat['monthly_cost'], 0, ',', '.') }}</p>
+                    <p class="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium">{{ $cat['active_count'] }} aktif</p>
                 </div>
             </div>
         @empty

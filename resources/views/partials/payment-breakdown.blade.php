@@ -25,8 +25,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">{{ $pm['name'] }}</h4>
-                            <span class="text-[11px] text-zinc-500 dark:text-zinc-400">{{ $pm['active_count'] }} langganan aktif</span>
+                            <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">{{ $pm['name'] }}</h3>
+                            <span class="text-[11px] text-zinc-600 dark:text-zinc-400">{{ $pm['active_count'] }} langganan aktif</span>
                         </div>
                     </div>
                     <span class="px-2 py-0.5 text-xs font-extrabold rounded-lg {{ $pm['is_heavy_burden'] ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300' }}">
